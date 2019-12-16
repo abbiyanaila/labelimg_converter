@@ -4,6 +4,7 @@ import pathlib
 import os
 import argparse
 from typing import *
+import copy
 
 def word_or_char(val):
     lv = len(val)
@@ -54,15 +55,17 @@ def save_to_file(jsonfile, content):
 
 
 def convert_xml_to_dict(xmldict):
-    conv_json = base_mockup.copy()
+    conv_json = copy.deepcopy(base_mockup)
     conv_json['image']['filename'] = xmldict['filename']
     conv_json['image']['dim']['width'] = int(xmldict['size']['width'])
     conv_json['image']['dim']['height'] = int(xmldict['size']['height'])
     conv_json['image']['dim']['channel'] = int(xmldict['size']['depth'])
 
-
+    tlen = len(xmldict['object'])
+    
     for obj in xmldict['object']:
-        object_json = object_mockup.copy()
+        
+        object_json = copy.deepcopy(object_mockup)
         object_json['class_type'] = word_or_char(obj['name'])
         object_json['class_value'] = obj['name']
         object_json['coord_type'] = 'bndbox'
@@ -72,7 +75,7 @@ def convert_xml_to_dict(xmldict):
         # object_json['coord_value']['xmax'] = int(obj['bndbox']['xmax'])
         # object_json['coord_value']['ymax'] = int(obj['bndbox']['ymax'])
         conv_json['object'].append(object_json)
-    # print(conv_json)
+#     print(conv_json)
     return conv_json
 
 
@@ -119,3 +122,4 @@ if __name__ == "__main__":
                 convert_xml_to_json(args_path)
     else:
         raise ValueError("--path nggak boleh kosong! ingat di isi!")
+
